@@ -19,7 +19,7 @@ public class CustomButton extends AppCompatActivity implements DialogInterface.O
     EditText JET1, JET2, JET3;
     TextView textView;
     SQLiteDatabase db;
-    Button JInsertButton;
+    Button JInsertButton, JDeleteAll;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -31,6 +31,7 @@ public class CustomButton extends AppCompatActivity implements DialogInterface.O
         JET3 = (EditText) findViewById(R.id.cet3);
         textView = (TextView) findViewById(R.id.textview);
         JInsertButton = (Button) findViewById(R.id.insertButton);
+        JDeleteAll = (Button) findViewById(R.id.deleteButton);
         db = openOrCreateDatabase("Mydb",MODE_PRIVATE,null);
         db.execSQL("create table if not exists mytable(sym1 varchar, sym2 varchar, relation varchar)");
 
@@ -43,7 +44,7 @@ public class CustomButton extends AppCompatActivity implements DialogInterface.O
                 db.execSQL("insert into mytable values('"+sym1+"','"+sym2+"','"+relation+"')");
                 Toast.makeText(CustomButton.this, "Formula successfully added", Toast.LENGTH_SHORT).show();
 
-                Cursor c = db.rawQuery("select *from mytable", null);
+                Cursor c = db.rawQuery("select *from mytable",null);
                 textView.setText("");
                 c.moveToFirst();
                 do{
@@ -52,6 +53,15 @@ public class CustomButton extends AppCompatActivity implements DialogInterface.O
                     relation = c.getString(2);
                     textView.append(sym1 + "  vs  " + sym2 + "_______" + relation + "\n");
                 } while (c.moveToNext());
+            }
+        });
+
+        JDeleteAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                db.execSQL("drop table mytable");
+                textView.setText("");
+                Toast.makeText(CustomButton.this,"Table Deleted",Toast.LENGTH_LONG).show();
             }
         });
     }
